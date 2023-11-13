@@ -1,0 +1,22 @@
+from google_images_search import GoogleImagesSearch
+
+# Set up Google Images Search API credentials
+gis = GoogleImagesSearch('your_api_key', 'your_cx')
+
+# Define search parameters
+search_params = {
+    'q': 'your_search_keyword',
+    'num': 10,  # Number of images to download
+    'safe': 'high',  # Safe search filter (optional)
+    'fileType': 'jpg'  # File type filter (optional)
+}
+
+# Perform the search and download images
+gis.search(search_params=search_params)
+
+# Save downloaded images to a local directory
+for image in gis.results():
+    image.download('path_to_save_directory')
+
+# Clean up resources
+gis.clear_search_metadata()
