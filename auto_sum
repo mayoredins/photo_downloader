@@ -1,0 +1,41 @@
+import os
+import cv2
+import numpy as np
+from sklearn.cluster import KMeans
+
+# Set the path to the directory containing the photos
+photos_directory = 'path_to_photos_directory'
+
+# Set the number of clusters (folders) to create for sorting
+num_clusters = 5
+
+# Load and process images
+image_files = os.listdir(photos_directory)
+images = []
+for file in image_files:
+    image_path = os.path.join(photos_directory, file)
+    image = cv2.imread(image_path)
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    image = cv2.resize(image, (224, 224))  # Resize images if needed
+    images.append(image)
+
+# Convert images to feature vectors
+image_vectors = np.array(images).reshape(len(images), -1)
+
+# Apply K-means clustering to group similar images
+kmeans = KMeans(n_clusters=num_clusters)
+kmeans.fit(image_vectors)
+
+# Create folders for each cluster
+for i in range(num_clusters):
+    folder_name = f'Cluster_{i+1}'
+    folder_path = os.path.join(photos_directory, folder_name)
+    os.makedirs(folder_path, exist_ok=True)
+
+# Move images to their respective folders based on assigned clusters
+for i, file in enumerate(image_files):
+    image_path = os.path.join(photos_directory, file)
+    folder_name = f'Cluster_{kmeans.labels_[i]+1}'
+    folder_path = os.path.join(photos_directory, folder_name)
+    new_image_path = os.path.join(folder_path, file)
+    os.rename(image_path, new_image_path)
